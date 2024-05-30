@@ -9,7 +9,9 @@ const ContactFormSchema = Yup.object().shape({
     .max(50, "Too Long!")
     .required("Required"),
   number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Number must be in format 123-45-67")
+    .min(3, "Too Short!")
+    .max(50, "Too Long!")
+    //.matches(/^\d{3}-\d{2}-\d{2}$/, "Number must be in format 123-45-67")
     .required("Required"),
 });
 
@@ -19,14 +21,13 @@ const initialValues = {
 };
 
 const ContactForm = ({ onAdd }) => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (values, actions) => {
     onAdd({
       id: nanoid(),
-      name: e.target.elements.name.value,
-      number: e.target.elements.number.value,
+      name: values.name,
+      number: values.number,
     });
-    e.target.reset();
+    actions.resetForm();
   };
   return (
     <Formik
@@ -35,7 +36,7 @@ const ContactForm = ({ onAdd }) => {
       validationSchema={ContactFormSchema}
     >
       {({ isValid, dirty }) => (
-        <Form className={css.form} onSubmit={handleSubmit}>
+        <Form className={css.form}>
           <div className={css.formBox}>
             <label>Name</label>
             <Field type="text" name="name" className={css.formInput} />
